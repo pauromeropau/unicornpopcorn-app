@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+// import 'dart:js';
 
+import 'package:flutter/material.dart';
+import 'package:unicorn_popcorn/src/pages/providers/peliculas_provider.dart';
+
+import 'models/actores_model.dart';
 import 'models/pelicula_model.dart';
 
 class PeliculaDetalle extends StatelessWidget {
@@ -18,6 +22,7 @@ class PeliculaDetalle extends StatelessWidget {
           ),
           _posterTitulo(context, pelicula),
           _descripcion(pelicula),
+          _crearCasting(pelicula),
         ])),
       ],
     ));
@@ -52,11 +57,14 @@ class PeliculaDetalle extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage(pelicula.getPosterImg()),
-              height: 150.0,
+          Hero(
+            tag: pelicula.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage(pelicula.getPosterImg()),
+                height: 150.0,
+              ),
             ),
           ),
           SizedBox(width: 20.0),
@@ -97,6 +105,60 @@ class PeliculaDetalle extends StatelessWidget {
             fontSize: 16.0, height: 1.3 //You can set your custom height here
             ),
         textAlign: TextAlign.justify,
+      ),
+    );
+  }
+
+  Widget _crearCasting(Pelicula pelicula) {
+    final peliProvider = new PeliculasProvider();
+
+    return FutureBuilder(
+      future: peliProvider.getCast(pelicula.id.toString()),
+      builder: (context, AsyncSnapshot<List> snapshot) {
+        if (snapshot.hasData) {
+          return _crearActoresPageView(snapshot.data);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _crearActoresPageView(List<Actor> actores) {
+    return SizedBox(
+      height: 200.0,
+      child: PageView.builder(
+        pageSnapping: false,
+        itemCount: actores.length,
+        controller: PageController(
+          viewportFraction: 0.3,
+          initialPage: 1,
+        ),
+        itemBuilder: (context, i) => _actorTarjeta(actores[i]),
+      ),
+    );
+  }
+
+  Widget _actorTarjeta(Actor actor) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              image: NetworkImage(actor.getFoto()),
+              height: 150.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            actor.name,
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
       ),
     );
   }
