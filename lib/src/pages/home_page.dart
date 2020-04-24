@@ -14,10 +14,15 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     peliculasProvider.getPopulares();
     return Scaffold(
-      // backgroundColor: Colors.black,
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        // backgroundColor: Colors.black,
-        title: Text('In theaters'),
+        backgroundColor: Colors.black,
+        title: Text(
+          'unicorn popcorn',
+          style: TextStyle(
+            color: Colors.white30,
+          ),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
@@ -59,14 +64,15 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(left: 20.0),
             child: Text(
-              'Populares',
-              style: Theme.of(context).textTheme.subhead,
+              'popular movies',
+              style: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
           SizedBox(
-            height: 5.0,
+            height: 20.0,
           ),
           StreamBuilder(
               stream: peliculasProvider.popularesStream,
@@ -75,6 +81,7 @@ class HomePage extends StatelessWidget {
                   return MovieHorizontal(
                     peliculas: snapshot.data,
                     siguientePagina: peliculasProvider.getPopulares,
+                    
                   );
                 } else {
                   return Center(
